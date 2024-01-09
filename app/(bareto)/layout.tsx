@@ -11,7 +11,7 @@ export default function BaretoLayout({
     <Navbar />
    <main className="flex flex-col items-center p-24">
 
-<span className="text-gl"> Nea paguelo pues</span>
+<span className="text-gl"></span>
 {children}
    </main>
    </>
