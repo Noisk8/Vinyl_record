@@ -1,6 +1,7 @@
 import { HomeIcon } from '@primer/octicons-react'
 import Link from 'next/link'
 import React from 'react'
+import { ActileLink } from '../actile-link/ActileLink'
 
 
 
@@ -25,7 +26,7 @@ export const Navbar = () => {
     
     {
       navItems.map(navItems => (
-        <Link key ={navItems.path} className='mr-2' href={navItems.path}>{navItems.text}</Link>
+       <ActileLink key={navItems.path} {...navItems}/>
       ))
     }
  
