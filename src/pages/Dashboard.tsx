@@ -3,6 +3,8 @@ import { Plus, Disc } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 interface VinylRecord {
   id: string;
@@ -24,12 +26,14 @@ export default function Dashboard() {
     image_url: ''
   });
   const { session } = useAuth();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchRecords();
   }, []);
 
   async function fetchRecords() {
+    setLoading(true);
     const { data, error } = await supabase
       .from('vinyl_records')
       .select('*')
@@ -40,6 +44,7 @@ export default function Dashboard() {
     } else {
       setRecords(data || []);
     }
+    setLoading(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -133,7 +138,6 @@ export default function Dashboard() {
               </div>
               <div>
 
-
   <label htmlFor="image_url" className="block text-sm font-medium text-gray-700">
                 Image URL
                 </label>
@@ -141,11 +145,11 @@ export default function Dashboard() {
                   type="text"
                   id="image_url"
                   required
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"   
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
                    value={formData.image_url}
                    onChange={(e) => setFormData({...formData, image_url: e.target.value })}
                    />
-              
+
 
 
               </div>
@@ -170,26 +174,47 @@ export default function Dashboard() {
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {records.map((record) => (
-          <div key={record.id} className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <img src={record.image_url} alt={`Imagen de ${record.album}`} className="w-full h-48 object-cover mb-4" />
-              <div className="flex items-center">
-                <Disc className="h-8 w-8 text-indigo-600" />
-                <div className="ml-4">
-                  <h3 className="text-lg font-medium text-gray-900">{record.album}</h3>
-                  <p className="text-sm text-gray-500">{record.artist}</p>
+        {loading ? (
+          <>
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white overflow-hidden shadow rounded-lg p-5">
+                <Skeleton height={192} className="mb-4" />
+                <div className="flex items-center">
+                  <Skeleton circle={true} height={32} width={32} />
+                  <div className="ml-4">
+                    <Skeleton height={20} width={150} />
+                    <Skeleton height={16} width={100} />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Skeleton height={16} width={80} />
+                  <Skeleton height={16} width={50} />
                 </div>
               </div>
-              <div className="mt-4">
-                <div className="text-sm text-gray-500">
-                  <p>Label: {record.label}</p>
-                  <p>Year: {record.year}</p>
+            ))}
+          </>
+        ) : (
+          records.map((record) => (
+            <div key={record.id} className="bg-white overflow-hidden shadow rounded-lg">
+              <div className="p-5">
+                <img src={record.image_url} alt={`Imagen de ${record.album}`} className="w-full h-48 object-cover mb-4" />
+                <div className="flex items-center">
+                  <Disc className="h-8 w-8 text-indigo-600" />
+                  <div className="ml-4">
+                    <h3 className="text-lg font-medium text-gray-900">{record.album}</h3>
+                    <p className="text-sm text-gray-500">{record.artist}</p>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <div className="text-sm text-gray-500">
+                    <p>Label: {record.label}</p>
+                    <p>Year: {record.year}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
